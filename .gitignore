@@ -1,0 +1,81 @@
+# ==========================================================
+# .gitignore - PitScore
+# Mantém o repositório com apenas código-fonte e documentação.
+# Artefatos gerados, dependências e arquivos locais são ignorados.
+# ==========================================================
+
+# ----- Java / Backend -----
+target/
+build/
+out/
+bin/
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+# Maven
+.mvn/
+mvnw
+mvnw.cmd
+# Gradle
+.gradle/
+gradle-app.setting
+
+# ----- Node / React / Frontend -----
+node_modules/
+/frontend/build/
+/frontend/dist/
+.npm/
+.pnp.*
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.Python
+
+# ----- Variáveis de ambiente e segredos -----
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ----- Banco de Dados (dumps e arquivos locais) -----
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.bak
+
+# ----- IDEs e Editores -----
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+*~
+
+# ----- Sistema Operacional -----
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ----- Arquivos temporários de escritório (LibreOffice/Word) -----
+.~lock.*#
+~$*.docx
+~$*.xlsx
+
+# ----- Logs e temporários -----
+*.log
+logs/
+tmp/
+temp/

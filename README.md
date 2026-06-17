@@ -47,3 +47,69 @@ Este projeto está organizado nas pastas descritas abaixo com as seguintes final
 * `assets/`: Recursos visuais e outros ativos do projeto.
 * `config/`: Arquivos de configuração do projeto e scripts de inicialização do banco de dados.
 ====================
+
+## 6. PADRÕES DE GIT
+
+Esta seção define as regras **obrigatórias** de uso do Git que toda a equipe deve seguir. O objetivo é manter um histórico limpo, rastreável e padronizado, alinhado à rastreabilidade exigida no documento de [Regras de Verificação e Análise de Requisitos](docs/padroes_adotados/Regras%20de%20Verificação%20e%20Análise%20de%20Requisitos.md) (regra A9).
+
+### 6.1. Organização de pastas
+
+O repositório separa **documentação** de **código-fonte**:
+
+* `docs/`: toda a documentação do projeto (requisitos, padrões adotados, diagramas). Cada categoria fica em sua subpasta (ex.: `docs/padroes_adotados/`, `docs/documento_requisitos/`).
+* `frontend/`, `backend/`, `config/`: código-fonte e configuração, conforme a [Estrutura de Pastas](#estrutura-de-pastas).
+* Arquivos de documentação usam a extensão `.md` sempre que possível, para versionamento e leitura direta no GitHub.
+
+### 6.2. Branches
+
+* A branch `main` é **protegida**: nunca se faz commit direto nela. Ela contém apenas código revisado e funcional.
+* Todo trabalho é feito em uma **branch específica**, criada a partir de `main`, seguindo o padrão:
+
+  | Tipo | Prefixo | Exemplo |
+  |---|---|---|
+  | Nova funcionalidade | `feat/` | `feat/cadastrar-selecao` |
+  | Correção de bug | `fix/` | `fix/login-bloqueio` |
+  | Documentação | `docs/` | `docs/diagrama-classes` |
+
+* O nome da branch é escrito em **minúsculas**, com palavras separadas por hífen (`kebab-case`), e referencia a tarefa/requisito quando aplicável (ex.: `feat/rf004-cadastrar-selecao`).
+* Após o merge na `main`, a branch de trabalho é **excluída**.
+
+### 6.3. Padrão de commits
+
+Os commits seguem o padrão **Conventional Commits**, com a mensagem escrita em **português**, no formato:
+
+```
+<tipo> - <descrição no imperativo>
+```
+
+* A descrição é curta (máximo 72 caracteres), inicia com verbo no imperativo e **não** termina com ponto final.
+* Tipos permitidos:
+
+  | Tipo | Quando usar |
+  |---|---|
+  | `feat` | Adição de uma nova funcionalidade |
+  | `fix` | Correção de um bug |
+  | `docs` | Mudanças apenas em documentação |
+  | `style` | Formatação que não altera lógica (espaços, ponto e vírgula) |
+  | `refactor` | Refatoração sem mudança de comportamento |
+  | `test` | Adição ou ajuste de testes |
+  | `chore` | Tarefas de manutenção (build, dependências, scripts) |
+
+* **Exemplos válidos:**
+  * `feat - Adiciona cadastro de seleção (RF004)`
+  * `fix - Corrige bloqueio de login após 5 tentativas`
+  * `docs - Atualiza documento de requisitos`
+* Referência completa do padrão adotado: <https://github.com/iuricode/padroes-de-commits>
+
+### 6.4. Fluxo de trabalho (resumo)
+
+1. Atualizar a `main` local: `git pull origin main`.
+2. Criar a branch da tarefa: `git checkout -b feat/rf004-cadastrar-selecao`.
+3. Desenvolver, fazendo commits pequenos e no padrão da Seção 6.3.
+4. Subir a branch: `git push origin feat/rf004-cadastrar-selecao`.
+5. Abrir um **Pull Request** para a `main`, vinculando a issue correspondente.
+6. Após revisão e aprovação de outro membro, fazer o merge e excluir a branch.
+
+### 6.5. Arquivos ignorados
+
+O repositório versiona apenas código-fonte e documentação. Artefatos gerados automaticamente, dependências e arquivos locais **não** são versionados, conforme definido no arquivo [`.gitignore`](.gitignore) na raiz do projeto (cobre Java, Node/React, Python, IDEs e arquivos de sistema operacional).
