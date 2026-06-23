@@ -6,6 +6,7 @@ function EstadioList() {
   const [estadios, setEstadios] = useState([]);
   const [estadioEditando, setEstadioEditando] = useState(null);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [mensagem, setMensagem] = useState("");
 
   const carregarEstadios = async () => {
     const response = await listarEstadios();
@@ -17,9 +18,16 @@ function EstadioList() {
   }, []);
 
   const handleDeletar = async (id) => {
-    if (window.confirm("Deseja deletar este estádio?")) {
-      await deletarEstadio(id);
-      carregarEstadios();
+    if (window.confirm("Deseja excluir este estádio?")) {
+      try {
+        await deletarEstadio(id);
+        setMensagem("Estádio excluído com sucesso!");
+        carregarEstadios();
+        setTimeout(() => setMensagem(""), 3000);
+      } catch (error) {
+        setMensagem("Erro ao excluir estádio.");
+        setTimeout(() => setMensagem(""), 3000);
+      }
     }
   };
 
@@ -44,6 +52,17 @@ function EstadioList() {
       <h1>Estádios</h1>
       <button onClick={handleNovo}>Novo Estádio</button>
 
+      {mensagem && (
+        <p
+          style={{
+            color: mensagem.includes("Erro") ? "red" : "green",
+            marginTop: "10px",
+          }}
+        >
+          {mensagem}
+        </p>
+      )}
+
       {mostrarFormulario && (
         <EstadioForm estadio={estadioEditando} onFechar={handleFechar} />
       )}
@@ -64,19 +83,32 @@ function EstadioList() {
           </tr>
         </thead>
         <tbody>
-          {estadios.map((e) => (
-            <tr key={e.id}>
-              <td>{e.id}</td>
-              <td>{e.nome}</td>
-              <td>{e.cidade}</td>
-              <td>{e.pais}</td>
-              <td>{e.capacidade}</td>
-              <td>
-                <button onClick={() => handleEditar(e)}>Editar</button>
-                <button onClick={() => handleDeletar(e.id)}>Deletar</button>
+          {estadios.length === 0 ? (
+            <tr>
+              <td colSpan="6" style={{ textAlign: "center" }}>
+                Nenhum estádio cadastrado
               </td>
             </tr>
-          ))}
+          ) : (
+            estadios.map((e) => (
+              <tr key={e.id}>
+                <td>{e.id}</td>
+                <td>{e.nome}</td>
+                <td>{e.cidade}</td>
+                <td>{e.pais || "-"}</td>
+                <td>{e.capacidade}</td>
+                <td>
+                  <button onClick={() => handleEditar(e)}>Editar</button>
+                  <button
+                    onClick={() => handleDeletar(e.id)}
+                    style={{ marginLeft: "8px" }}
+                  >
+                    Excluir
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

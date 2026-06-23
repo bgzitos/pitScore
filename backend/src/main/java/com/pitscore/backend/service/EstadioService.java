@@ -31,13 +31,21 @@ public class EstadioService {
     }
 
     public EstadioDTO criar(EstadioDTO dto) {
-        Estadio estadio = toEntity(dto);
-        return toDTO(repository.save(estadio));
+        if (repository.existsByNomeIgnoreCase(dto.getNome())) {
+            throw new RuntimeException("Estádio já cadastrado com o nome: " + dto.getNome());
+        }
+        return toDTO(repository.save(toEntity(dto)));
     }
 
     public EstadioDTO atualizar(Long id, EstadioDTO dto) {
         Estadio estadio = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Estádio não encontrado com id: " + id));
+
+        if (!estadio.getNome().equalsIgnoreCase(dto.getNome()) &&
+                repository.existsByNomeIgnoreCase(dto.getNome())) {
+            throw new RuntimeException("Já existe um estádio com o nome: " + dto.getNome());
+        }
+
         estadio.setNome(dto.getNome());
         estadio.setCidade(dto.getCidade());
         estadio.setPais(dto.getPais());

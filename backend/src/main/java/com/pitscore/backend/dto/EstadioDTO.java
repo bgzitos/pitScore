@@ -14,7 +14,6 @@ public class EstadioDTO {
     @NotBlank(message = "Cidade é obrigatória")
     private String cidade;
 
-    @NotBlank(message = "País é obrigatório")
     private String pais;
 
     @NotNull(message = "Capacidade é obrigatória")
