@@ -1,0 +1,32 @@
+[
+  {
+    "caso": "CT-001",
+    "status": "Aprovado",
+    "mensagem": "Mensagem de sucesso exibida"
+  },
+  {
+    "caso": "CT-002",
+    "status": "Aprovado",
+    "mensagem": "Mensagens de validação exibidas"
+  },
+  {
+    "caso": "CT-003",
+    "status": "Aprovado",
+    "mensagem": "Mensagem de nome duplicado exibida"
+  },
+  {
+    "caso": "CT-004",
+    "status": "Aprovado",
+    "mensagem": "Estádio listado com os dados cadastrados"
+  },
+  {
+    "caso": "CT-005",
+    "status": "Aprovado",
+    "mensagem": "Capacidade atualizada e refletida na listagem"
+  },
+  {
+    "caso": "CT-006",
+    "status": "Aprovado",
+    "mensagem": "Estádio removido da listagem"
+  }
+]
