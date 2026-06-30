@@ -135,6 +135,7 @@ def ct_001_cadastrar_com_dados_validos(driver, wait):
     salvar_modal(driver)
 
     ok = False
+    msg_falha = "com texto 'cadastrado com sucesso' não foi exibido após salvar"
     try:
         wait.until(EC.presence_of_element_located((By.XPATH,
             "//div[contains(@class,'toast') and contains(text(),'cadastrado com sucesso')]"
@@ -144,7 +145,7 @@ def ct_001_cadastrar_com_dados_validos(driver, wait):
         pass
     tirar_print(driver, "CT-001")
     registrar("CT-001", ok,
-              "Mensagem de sucesso exibida" if ok else "Mensagem de sucesso não encontrada")
+              f"'cadastrado com sucesso' exibido para '{NOME_TESTE}'" if ok else msg_falha)
 
 
 def ct_002_cadastrar_com_campos_obrigatorios_vazios(driver, wait):
@@ -154,11 +155,14 @@ def ct_002_cadastrar_com_campos_obrigatorios_vazios(driver, wait):
 
     mensagens_esperadas = ["Nome é obrigatório", "Cidade é obrigatória", "Capacidade é obrigatória"]
 
+    ausentes = []
+
     def todas_mensagens_presentes(d):
-        return all(
-            d.find_elements(By.XPATH, f"//*[contains(@class,'form-error') and contains(text(),'{m}')]")
-            for m in mensagens_esperadas
-        )
+        ausentes.clear()
+        for m in mensagens_esperadas:
+            if not d.find_elements(By.XPATH, f"//*[contains(@class,'form-error') and contains(text(),'{m}')]"):
+                ausentes.append(m)
+        return len(ausentes) == 0
 
     ok = False
     try:
@@ -168,7 +172,8 @@ def ct_002_cadastrar_com_campos_obrigatorios_vazios(driver, wait):
         pass
     tirar_print(driver, "CT-002")
     registrar("CT-002", ok,
-              "Mensagens de validação exibidas" if ok else "Mensagens de validação ausentes")
+              "Mensagens de validação exibidas: " + ", ".join(f"'{m}'" for m in mensagens_esperadas)
+              if ok else "Mensagens ausentes: " + ", ".join(f"'{m}'" for m in ausentes))
 
 
 def ct_003_cadastrar_com_nome_duplicado(driver, wait):
@@ -178,6 +183,7 @@ def ct_003_cadastrar_com_nome_duplicado(driver, wait):
     salvar_modal(driver)
 
     ok = False
+    msg_falha = f"Mensagem de nome duplicado não exibida ao tentar cadastrar '{NOME_TESTE}' novamente"
     try:
         wait.until(EC.presence_of_element_located(
             (By.XPATH, "//*[contains(text(),'já cadastrado')]")
@@ -187,7 +193,7 @@ def ct_003_cadastrar_com_nome_duplicado(driver, wait):
         pass
     tirar_print(driver, "CT-003")
     registrar("CT-003", ok,
-              "Mensagem de nome duplicado exibida" if ok else "Mensagem de nome duplicado não encontrada")
+              f"Erro 'já cadastrado' exibido ao repetir nome '{NOME_TESTE}'" if ok else msg_falha)
 
 
 def ct_004_consultar_listagem(driver, wait):
@@ -199,6 +205,7 @@ def ct_004_consultar_listagem(driver, wait):
         "[td[text()='72788']]"
     )
     ok = False
+    msg_falha = f"Linha com nome='{NOME_TESTE}', cidade='Brasilia', país='Brasil', capacidade='72788' não encontrada na tabela"
     try:
         wait.until(EC.presence_of_element_located((By.XPATH, linha_xpath)))
         ok = True
@@ -206,7 +213,7 @@ def ct_004_consultar_listagem(driver, wait):
         pass
     tirar_print(driver, "CT-004")
     registrar("CT-004", ok,
-              "Estádio listado com os dados cadastrados" if ok else "Estádio não encontrado na listagem")
+              f"'{NOME_TESTE}' listado com todos os dados corretos na tabela" if ok else msg_falha)
 
 
 def ct_005_alterar_capacidade(driver, wait):
@@ -222,6 +229,7 @@ def ct_005_alterar_capacidade(driver, wait):
     salvar_modal(driver)
 
     ok = False
+    msg_falha = f"Capacidade de '{NOME_TESTE}' não foi atualizada para 80000 na listagem (toast 'alterado com sucesso' ou linha com novo valor não encontrados)"
     try:
         wait.until(EC.presence_of_element_located((By.XPATH,
             "//div[contains(@class,'toast') and contains(text(),'alterado com sucesso')]"
@@ -234,7 +242,7 @@ def ct_005_alterar_capacidade(driver, wait):
         pass
     tirar_print(driver, "CT-005")
     registrar("CT-005", ok,
-              "Capacidade atualizada e refletida na listagem" if ok else "Atualização não refletida na listagem")
+              f"Capacidade de '{NOME_TESTE}' atualizada para 80000 e refletida na tabela" if ok else msg_falha)
 
 
 def ct_006_excluir_estadio(driver, wait):
@@ -247,6 +255,7 @@ def ct_006_excluir_estadio(driver, wait):
     driver.switch_to.alert.accept()
 
     ok = False
+    msg_falha = f"'{NOME_TESTE}' ainda presente na tabela após exclusão (toast 'excluído com sucesso' ou remoção da linha não detectados)"
     try:
         wait.until(EC.presence_of_element_located((By.XPATH,
             "//div[contains(@class,'toast') and contains(text(),'excluído com sucesso')]"
@@ -259,7 +268,7 @@ def ct_006_excluir_estadio(driver, wait):
         pass
     tirar_print(driver, "CT-006")
     registrar("CT-006", ok,
-              "Estádio removido da listagem" if ok else "Estádio ainda presente na listagem")
+              f"'{NOME_TESTE}' removido com sucesso e não aparece mais na tabela" if ok else msg_falha)
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
