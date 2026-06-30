@@ -219,7 +219,7 @@ function AdminEstadios() {
                 <td className="td-bold">{e.nome}</td>
                 <td>{e.cidade}</td>
                 <td className="td-muted">{e.pais || "—"}</td>
-                <td>{e.capacidade?.toLocaleString("pt-BR")}</td>
+                <td>{e.capacidade}</td>
                 <td>
                   <button className="action-btn" title="Editar" onClick={() => setModal(e)}>✏️</button>
                   <button className="action-btn del" title="Excluir" onClick={() => handleDeletar(e)}>🗑️</button>

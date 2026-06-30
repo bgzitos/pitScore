@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PartidaRepository extends JpaRepository<Partida, Long> {
+
+    boolean existsByEstadioId(Long estadioId);
 }

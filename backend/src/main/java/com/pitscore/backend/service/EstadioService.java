@@ -3,7 +3,10 @@ package com.pitscore.backend.service;
 import com.pitscore.backend.dto.EstadioDTO;
 import com.pitscore.backend.model.Estadio;
 import com.pitscore.backend.repository.EstadioRepository;
+import com.pitscore.backend.repository.PartidaRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -12,9 +15,11 @@ import java.util.stream.Collectors;
 public class EstadioService {
 
     private final EstadioRepository repository;
+    private final PartidaRepository partidaRepository;
 
-    public EstadioService(EstadioRepository repository) {
+    public EstadioService(EstadioRepository repository, PartidaRepository partidaRepository) {
         this.repository = repository;
+        this.partidaRepository = partidaRepository;
     }
 
     public List<EstadioDTO> listarTodos() {
@@ -55,7 +60,11 @@ public class EstadioService {
 
     public void deletar(Long id) {
         if (!repository.existsById(id)) {
-            throw new RuntimeException("Estádio não encontrado com id: " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Estádio não encontrado com id: " + id);
+        }
+        if (partidaRepository.existsByEstadioId(id)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Estádio não pode ser excluído pois está vinculado a uma ou mais partidas.");
         }
         repository.deleteById(id);
     }

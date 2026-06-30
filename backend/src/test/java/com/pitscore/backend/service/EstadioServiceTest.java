@@ -3,12 +3,14 @@ package com.pitscore.backend.service;
 import com.pitscore.backend.dto.EstadioDTO;
 import com.pitscore.backend.model.Estadio;
 import com.pitscore.backend.repository.EstadioRepository;
+import com.pitscore.backend.repository.PartidaRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,9 @@ class EstadioServiceTest {
 
     @Mock
     private EstadioRepository repository;
+
+    @Mock
+    private PartidaRepository partidaRepository;
 
     @InjectMocks
     private EstadioService service;
@@ -124,6 +129,7 @@ class EstadioServiceTest {
     @Test
     void deletar_deveRemoverEstadio_quandoIdExiste() {
         when(repository.existsById(1L)).thenReturn(true);
+        when(partidaRepository.existsByEstadioId(1L)).thenReturn(false);
 
         service.deletar(1L);
 
@@ -135,8 +141,19 @@ class EstadioServiceTest {
         when(repository.existsById(99L)).thenReturn(false);
 
         assertThatThrownBy(() -> service.deletar(99L))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ResponseStatusException.class)
                 .hasMessageContaining("não encontrado");
+        verify(repository, never()).deleteById(any());
+    }
+
+    @Test
+    void deletar_deveLancarExcecao_quandoEstadioVinculadoAPartida() {
+        when(repository.existsById(1L)).thenReturn(true);
+        when(partidaRepository.existsByEstadioId(1L)).thenReturn(true);
+
+        assertThatThrownBy(() -> service.deletar(1L))
+                .isInstanceOf(ResponseStatusException.class)
+                .hasMessageContaining("vinculado a uma ou mais partidas");
         verify(repository, never()).deleteById(any());
     }
 }
