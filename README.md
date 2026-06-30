@@ -14,29 +14,117 @@ Para utilizar o sistema como um usuário, você pode acessar a nossa versão hos
 
 Caso deseje baixar e usar o sistema localmente (sem precisar ser um desenvolvedor):
 
-1. Baixe o `.zip` do projeto clicando no botão "Code" e depois em "Download ZIP" na página inicial do repositório no GitHub.
+1. Baixe o `.zip` do projeto clicando no botão **"Code"** e depois em **"Download ZIP"** na página inicial do repositório no GitHub.
 2. Extraia o conteúdo do arquivo baixado para uma pasta de sua preferência.
-3. Certifique-se de ter o banco de dados PostgreSQL rodando em sua máquina e crie um banco de dados chamado `pitscore`.
-4. Acesse a pasta extraída e dê um duplo clique no arquivo executável `iniciar-sistema.bat` (se estiver no Windows) ou abra o terminal e execute `./iniciar-sistema.sh` (se estiver no Linux/macOS).
+3. Certifique-se de ter o banco de dados PostgreSQL (versão 17) rodando em sua máquina.
+4. Acesse seu gerenciador de banco de dados (pgAdmin, DBeaver ou terminal) e crie um banco de dados vazio chamado `pitscore`.
 5. Após os scripts configurarem tudo automaticamente, abra o seu navegador e acesse a URL `http://localhost:3000` para começar a usar o sistema.
 
-## 3. INSTRUÇÕES PARA DEVS
+## 3. INSTRUÇÕES PARA DESENVOLVEDORES
 
-Siga as instruções abaixo para preparar seu ambiente e atuar como um DEV do projeto:
+Para atuar no desenvolvimento do projeto, é necessário preparar o
+ecossistema completo (Banco de Dados, Backend, Frontend e Testes). Siga
+o passo a passo:
 
-1. Clone o repositório com git clone https://github.com/bgzitos/pitScore.git.
-2. Instale as dependências listadas nas [tecnologias](#4-tecnologias).
-3. Para executar o projeto:
-   - **Backend:** acesse a pasta `backend` e rode `./mvnw spring-boot:run`
-   - **Frontend:** acesse a pasta `frontend` e rode `npm start`
+### 3.1. Preparação Inicial
 
-## 4. Tecnologias
+1.  Clone o repositório:
 
-- **Frontend:** React versão 19.2.7
-- **Backend:** Java versão 25 lts
-- **Banco de Dados:** PostgreSQL versão 17
-- **IDE:** VSCode e ou IntelliJ
-- **Outras:** Python versão 3.12.12
+``` bash
+git clone https://github.com/bgzitos/pitScore.git
+```
+
+2.  Acesse a pasta raiz do projeto:
+
+``` bash
+cd pitScore
+```
+
+### 3.2. Configuração do Banco de Dados
+
+O projeto utiliza o **PostgreSQL 17** e o **Flyway** para controle de
+migrações.
+
+Crie o banco de dados e o usuário da aplicação:
+
+``` sql
+CREATE DATABASE pitscore;
+CREATE USER admin_pitscore WITH ENCRYPTED PASSWORD 'sua_senha';
+GRANT ALL PRIVILEGES ON DATABASE pitscore TO admin_pitscore;
+```
+
+> **Importante:** Nas versões mais recentes do PostgreSQL, é necessário
+> garantir permissões no esquema `public`. Conecte-se ao banco
+> `pitscore` e execute:
+
+``` sql
+GRANT ALL ON SCHEMA public TO admin_pitscore;
+```
+
+### 3.3. Executando a Aplicação
+
+Você precisará de **dois terminais** abertos simultaneamente.
+
+#### Terminal 1 -- Backend (Spring Boot / Java)
+
+``` bash
+cd backend
+./mvnw spring-boot:run
+```
+
+O backend estará disponível na porta **8080** e as tabelas do banco
+serão geradas automaticamente.
+
+#### Terminal 2 -- Frontend (Node.js)
+
+``` bash
+cd frontend
+npm install
+npm start
+```
+
+O frontend estará disponível consumindo a API localmente.
+
+### 3.4. Executando os Testes Automatizados (Selenium)
+
+Para garantir a integridade das funcionalidades (como a tela de
+cadastro), utilizamos scripts de validação em Python.
+
+Certifique-se de que:
+
+-   Backend e Frontend estejam em execução;
+-   Chromium e ChromeDriver estejam instalados.
+
+Execute:
+
+``` bash
+cd teste/selenium
+pip install -r requirements.txt
+python3 test_casos_validacao.py
+```
+
+## 4. TECNOLOGIAS UTILIZADAS
+
+### Ecossistema Principal
+
+Camada           Tecnologia
+  ---------------- --------------------------------------
+Frontend         React (v19.2.7) / Node.js
+Backend          Java (v25 LTS) / Spring Boot / Maven
+Banco de Dados   PostgreSQL (v17) / Flyway
+
+### Qualidade e Automação
+
+Área         Tecnologia
+  ------------ ---------------------------------------
+Testes E2E   Python (v3.12) com Selenium WebDriver
+
+### Ferramentas e Ambiente
+
+Categoria            Ferramenta
+  -------------------- ------------------------
+IDEs Recomendadas    VSCode e IntelliJ IDEA
+Controle de Versão   Git / GitHub
 
 ## 5. ORGANIZAÇÃO DO PROJETO
 
@@ -51,9 +139,7 @@ Este projeto está organizado nas pastas descritas abaixo com as seguintes final
   - `frontend/src/utils/`: Funções auxiliares e utilitárias.
 - `backend/`: Contém a API e a lógica de negócios desenvolvida em Java.
 - `docs/`: Documentação do projeto, incluindo manuais, diagrama de classes e documentação de casos de uso.
-- `public/`: Arquivos estáticos, como imagens e o `index.html` inicial.
-- `assets/`: Recursos visuais e outros ativos do projeto.
-- # `config/`: Arquivos de configuração do projeto e scripts de inicialização do banco de dados.
+- `assets/`: Gitkeep.
 
 ## 6. PADRÕES DE GIT
 

@@ -10,7 +10,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 BASE_URL = os.environ.get("PITSCORE_BASE_URL", "http://localhost:3000")
-API_URL = os.environ.get("PITSCORE_API_URL", "http://localhost:8081/api/estadios")
+API_URL = os.environ.get("PITSCORE_API_URL", "http://localhost:8080/api/estadios")
 # base do backend (ex: http://localhost:8081)
 API_BASE = "/".join(API_URL.split("/")[:3])
 
