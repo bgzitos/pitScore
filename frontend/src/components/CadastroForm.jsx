@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { cadastrarUsuario } from "../utils/authService";
 
 function CadastroForm({ onIrParaLogin }) {
-  const [form, setForm] = useState({ nome: "", email: "", senha: "" });
+  const [form, setForm] = useState({ nome: "", email: "", senha: "", confirmarSenha: "" });
   const [erros, setErros] = useState({});
-  const [sucesso, setSucesso] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -12,94 +12,107 @@ function CadastroForm({ onIrParaLogin }) {
   };
 
   const validar = () => {
-    const novosErros = {};
-    if (!form.nome.trim()) novosErros.nome = "Nome é obrigatório";
-    if (!form.email.trim()) novosErros.email = "E-mail é obrigatório";
-    if (!form.senha || form.senha.length < 8) {
-      novosErros.senha = "Senha deve ter no mínimo 8 caracteres";
-    }
-    setErros(novosErros);
-    return Object.keys(novosErros).length === 0;
+    const e = {};
+    if (!form.nome.trim()) e.nome = "Nome é obrigatório";
+    if (!form.email.trim()) e.email = "E-mail é obrigatório";
+    if (!form.senha || form.senha.length < 8) e.senha = "Senha deve ter no mínimo 8 caracteres";
+    if (form.senha !== form.confirmarSenha) e.confirmarSenha = "As senhas não coincidem";
+    setErros(e);
+    return Object.keys(e).length === 0;
   };
 
   const handleCadastrar = async () => {
     if (!validar()) return;
-
+    setCarregando(true);
     try {
-      await cadastrarUsuario(form);
-      setSucesso(
-        "Cadastro realizado com sucesso! Redirecionando para o login...",
-      );
-      setTimeout(() => onIrParaLogin(), 1500);
+      await cadastrarUsuario({ nome: form.nome, email: form.email, senha: form.senha });
+      onIrParaLogin();
     } catch (error) {
-      const mensagem =
-        error.response?.data?.mensagem || "Erro ao cadastrar. Tente novamente.";
-      setErros({ geral: mensagem });
+      setErros({ geral: error.response?.data?.mensagem || "Erro ao cadastrar. Tente novamente." });
+    } finally {
+      setCarregando(false);
     }
   };
 
-  const estiloInput = (campo) => ({
-    display: "block",
-    marginBottom: "4px",
-    borderColor: erros[campo] ? "red" : "#ccc",
-    padding: "6px",
-    width: "100%",
-  });
-
   return (
-    <div
-      style={{ border: "1px solid #ccc", padding: "20px", maxWidth: "350px" }}
-    >
-      <h2>Criar Conta</h2>
+    <div className="auth-page">
+      <div className="auth-page-content">
+        <div className="auth-card">
+          <div className="auth-logo">Pit<span className="score">Score</span></div>
+          <div className="auth-subtitle">Precision Engineered Analytics</div>
 
-      {sucesso && <p style={{ color: "green" }}>{sucesso}</p>}
-      {erros.geral && <p style={{ color: "red" }}>{erros.geral}</p>}
+          <div className="auth-title">Criar conta</div>
 
-      <div style={{ marginBottom: "12px" }}>
-        <label>Nome:</label>
-        <input
-          name="nome"
-          value={form.nome}
-          onChange={handleChange}
-          style={estiloInput("nome")}
-        />
-        {erros.nome && (
-          <span style={{ color: "red", fontSize: "12px" }}>{erros.nome}</span>
-        )}
+          {erros.geral && <div className="form-error" style={{ marginBottom: 12 }}>{erros.geral}</div>}
+
+          <div className="form-group">
+            <label className="form-label">Nome</label>
+            <input
+              className={`form-input${erros.nome ? " error" : ""}`}
+              name="nome"
+              placeholder="Seu nome completo"
+              value={form.nome}
+              onChange={handleChange}
+            />
+            {erros.nome && <div className="form-error">{erros.nome}</div>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input
+              className={`form-input${erros.email ? " error" : ""}`}
+              name="email"
+              type="email"
+              placeholder="nome@exemplo.com"
+              value={form.email}
+              onChange={handleChange}
+            />
+            {erros.email && <div className="form-error">{erros.email}</div>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Senha</label>
+            <input
+              className={`form-input${erros.senha ? " error" : ""}`}
+              name="senha"
+              type="password"
+              placeholder="••••••••"
+              value={form.senha}
+              onChange={handleChange}
+            />
+            {erros.senha && <div className="form-error">{erros.senha}</div>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Confirmar Senha</label>
+            <input
+              className={`form-input${erros.confirmarSenha ? " error" : ""}`}
+              name="confirmarSenha"
+              type="password"
+              placeholder="••••••••"
+              value={form.confirmarSenha}
+              onChange={handleChange}
+            />
+            {erros.confirmarSenha && <div className="form-error">{erros.confirmarSenha}</div>}
+          </div>
+
+          <button className="btn-primary" onClick={handleCadastrar} disabled={carregando}>
+            {carregando ? "Criando conta..." : "Criar Conta →"}
+          </button>
+
+          <div className="auth-alt">
+            Já tem uma conta? <button onClick={onIrParaLogin}>Entre agora</button>
+          </div>
+        </div>
       </div>
 
-      <div style={{ marginBottom: "12px" }}>
-        <label>E-mail:</label>
-        <input
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          style={estiloInput("email")}
-        />
-        {erros.email && (
-          <span style={{ color: "red", fontSize: "12px" }}>{erros.email}</span>
-        )}
-      </div>
-
-      <div style={{ marginBottom: "12px" }}>
-        <label>Senha:</label>
-        <input
-          name="senha"
-          type="password"
-          value={form.senha}
-          onChange={handleChange}
-          style={estiloInput("senha")}
-        />
-        {erros.senha && (
-          <span style={{ color: "red", fontSize: "12px" }}>{erros.senha}</span>
-        )}
-      </div>
-
-      <button onClick={handleCadastrar}>Cadastrar</button>
-
-      <p style={{ marginTop: "12px" }}>
-        Já tem conta? <button onClick={onIrParaLogin}>Fazer login</button>
-      </p>
+      <footer className="auth-footer">
+        <div className="auth-footer-logo">Pit<span className="score">Score</span></div>
+        <div>© 2026 PitScore. Todos os direitos reservados.</div>
+        <div className="auth-footer-names">
+          <span>Eduardo</span><span>Lucas</span><span>Vincent</span>
+        </div>
+      </footer>
     </div>
   );
 }

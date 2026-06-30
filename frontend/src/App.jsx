@@ -1,63 +1,58 @@
 import React, { useState } from "react";
-<<<<<<< HEAD
-import EstadioList from "./components/EstadioList";
-import PartidaList from "./components/PartidaList";
-
-function App() {
-  const [tela, setTela] = useState("estadios");
-
-  return (
-    <div>
-      <nav style={{ padding: "10px 20px", borderBottom: "1px solid #ccc" }}>
-        <button onClick={() => setTela("estadios")} disabled={tela === "estadios"}>
-          Estádios
-        </button>
-        <button
-          onClick={() => setTela("partidas")}
-          disabled={tela === "partidas"}
-          style={{ marginLeft: "8px" }}
-        >
-          Partidas
-        </button>
-      </nav>
-      {tela === "estadios" ? <EstadioList /> : <PartidaList />}
-=======
+import "./index.css";
 import LoginForm from "./components/LoginForm";
 import CadastroForm from "./components/CadastroForm";
-import PainelUsuario from "./components/PainelUsuario";
+import Navbar from "./components/Navbar";
+import Home from "./components/Home";
+import AdminPanel from "./components/AdminPanel";
 
 function App() {
   const usuarioSalvo = localStorage.getItem("usuario");
-
   const [usuario, setUsuario] = useState(
-    usuarioSalvo ? JSON.parse(usuarioSalvo) : null,
+    usuarioSalvo ? JSON.parse(usuarioSalvo) : null
   );
-  const [tela, setTela] = useState("login"); // "login" ou "cadastro"
+  const [authTela, setAuthTela] = useState("login");
+  const [secao, setSecao] = useState("home");
 
   const handleLogin = (usuarioLogado) => {
+    localStorage.setItem("usuario", JSON.stringify(usuarioLogado));
     setUsuario(usuarioLogado);
+    setSecao("home");
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usuario");
     setUsuario(null);
-    setTela("login");
+    setAuthTela("login");
   };
 
-  if (usuario) {
-    return <PainelUsuario usuario={usuario} onLogout={handleLogout} />;
+  if (!usuario) {
+    return authTela === "login" ? (
+      <LoginForm
+        onLogin={handleLogin}
+        onIrParaCadastro={() => setAuthTela("cadastro")}
+      />
+    ) : (
+      <CadastroForm onIrParaLogin={() => setAuthTela("login")} />
+    );
   }
 
   return (
-    <div style={{ padding: "20px" }}>
-      {tela === "login" ? (
-        <LoginForm
-          onLogin={handleLogin}
-          onIrParaCadastro={() => setTela("cadastro")}
-        />
-      ) : (
-        <CadastroForm onIrParaLogin={() => setTela("login")} />
+    <div>
+      <Navbar usuario={usuario} secao={secao} onNavegar={setSecao} onLogout={handleLogout} />
+      {secao === "home" && <Home />}
+      {secao === "admin" && <AdminPanel />}
+      {secao === "simulador" && (
+        <div className="page" style={{ paddingTop: 48 }}>
+          <p style={{ color: "var(--text-muted)" }}>Simulador em desenvolvimento.</p>
+        </div>
       )}
->>>>>>> df8504c (feat - add login e autenticacao)
+      {secao === "perfil" && (
+        <div className="page" style={{ paddingTop: 48 }}>
+          <p style={{ color: "var(--text-muted)" }}>Perfil em desenvolvimento.</p>
+        </div>
+      )}
     </div>
   );
 }
