@@ -62,9 +62,14 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+<<<<<<< HEAD
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<scope>test</scope>
+=======
+			<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-crypto</artifactId>
+>>>>>>> df8504c (feat - add login e autenticacao)
 		</dependency>
 	</dependencies>
 
